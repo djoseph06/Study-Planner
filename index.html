@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Organise your lectures, study tasks, and commitments with Orbit."
+  >
+  <title>Orbit — Study Planner</title>
+
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Planner controls">
+      <a class="brand" href="./index.html" aria-label="Orbit home">
+        <span class="brand-mark" aria-hidden="true">O</span>
+        <span>ORBIT</span>
+      </a>
+
+      <button id="add-event" class="primary-button" type="button">
+        + Add event
+      </button>
+
+      <section class="sidebar-section">
+        <h2>Your calendars</h2>
+
+        <div class="calendar-filters">
+          <label class="calendar-filter">
+            <input type="checkbox" value="lecture" checked>
+            <span class="category-dot lecture" aria-hidden="true"></span>
+            Lectures
+          </label>
+
+          <label class="calendar-filter">
+            <input type="checkbox" value="study" checked>
+            <span class="category-dot study" aria-hidden="true"></span>
+            Study
+          </label>
+
+          <label class="calendar-filter">
+            <input type="checkbox" value="personal" checked>
+            <span class="category-dot personal" aria-hidden="true"></span>
+            Personal
+          </label>
+
+          <label class="calendar-filter">
+            <input type="checkbox" value="extracurricular" checked>
+            <span
+              class="category-dot extracurricular"
+              aria-hidden="true"
+            ></span>
+            Extracurriculars
+          </label>
+        </div>
+      </section>
+
+      <section class="sidebar-section">
+        <div class="section-heading">
+          <h2>Study tasks</h2>
+
+          <button
+            id="add-task"
+            class="icon-button"
+            type="button"
+            aria-label="Add study task"
+          >
+            +
+          </button>
+        </div>
+
+        <p id="tasks-empty" class="empty-state">
+          No study tasks yet.
+        </p>
+
+        <ul id="task-list" class="task-list"></ul>
+      </section>
+
+      <section class="planning-card">
+        <h2>Make time for study</h2>
+        <p>Fit your tasks around your commitments.</p>
+
+        <button
+          id="plan-week"
+          class="primary-button"
+          type="button"
+          aria-describedby="planning-status"
+          disabled
+        >
+          Plan my week
+        </button>
+
+        <p id="planning-status" class="hint">
+          Available once scheduling is connected.
+        </p>
+      </section>
+    </aside>
+
+    <main class="calendar-main">
+      <header class="calendar-toolbar">
+        <div>
+          <p class="eyebrow">YOUR STUDY SPACE</p>
+          <h1 id="calendar-heading">Weekly planner</h1>
+        </div>
+
+        <nav class="calendar-navigation" aria-label="Calendar navigation">
+          <button
+            id="theme-toggle"
+            class="secondary-button"
+            type="button"
+            aria-label="Dark mode"
+            aria-pressed="true"
+          >
+            Dark mode: on
+          </button>
+
+          <button
+            id="today-button"
+            class="secondary-button"
+            type="button"
+          >
+            Today
+          </button>
+
+          <button
+            id="previous-week"
+            class="icon-button"
+            type="button"
+            aria-label="Previous week"
+          >
+            ‹
+          </button>
+
+          <button
+            id="next-week"
+            class="icon-button"
+            type="button"
+            aria-label="Next week"
+          >
+            ›
+          </button>
+
+          <label class="sr-only" for="calendar-view">
+            Calendar view
+          </label>
+
+          <select id="calendar-view">
+            <option value="week">Week</option>
+            <option value="day">Day</option>
+          </select>
+        </nav>
+      </header>
+
+      <p id="planner-message" role="status" aria-live="polite"></p>
+
+      <section class="calendar-panel" aria-labelledby="calendar-heading">
+        <div
+          id="calendar-scroll"
+          class="calendar-scroll"
+          role="region"
+          aria-label="Timetable"
+          tabindex="0"
+        >
+          <div id="calendar-grid" class="calendar-grid">
+            <p class="calendar-placeholder">
+              Your weekly timetable will appear here once we connect
+              the calendar.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Add or edit an event -->
+  <dialog id="event-dialog" aria-labelledby="event-dialog-title">
+    <form id="event-form">
+      <header class="dialog-header">
+        <h2 id="event-dialog-title">Add event</h2>
+
+        <button
+          class="icon-button"
+          type="button"
+          data-close-dialog="event-dialog"
+          aria-label="Close event form"
+        >
+          ×
+        </button>
+      </header>
+
+      <label for="event-title">Event name</label>
+      <input
+        id="event-title"
+        type="text"
+        placeholder="e.g. Biology lecture"
+        maxlength="100"
+        required
+      >
+
+      <label for="event-category">Calendar</label>
+      <select id="event-category">
+        <option value="lecture">Lecture</option>
+        <option value="study">Study</option>
+        <option value="personal">Personal</option>
+        <option value="extracurricular">Extracurricular</option>
+      </select>
+
+      <label for="event-date">Date</label>
+      <input id="event-date" type="date" required>
+
+      <div class="time-fields">
+        <div>
+          <label for="event-start">Start time</label>
+          <input id="event-start" type="time" required>
+        </div>
+
+        <div>
+          <label for="event-end">End time</label>
+          <input id="event-end" type="time" required>
+        </div>
+      </div>
+
+      <label for="event-location">
+        Location or meeting link (optional)
+      </label>
+      <input
+        id="event-location"
+        type="text"
+        placeholder="e.g. Room B204"
+        maxlength="300"
+      >
+
+      <label for="event-repeat">Repeat</label>
+      <select id="event-repeat">
+        <option value="none">Does not repeat</option>
+        <option value="weekly">Every week</option>
+      </select>
+
+      <div id="repeat-until-field" hidden>
+        <label for="event-repeat-until">Repeat until</label>
+        <input id="event-repeat-until" type="date">
+      </div>
+
+      <label for="event-notes">Notes (optional)</label>
+      <textarea
+        id="event-notes"
+        rows="3"
+        placeholder="Anything you need to remember"
+        maxlength="2000"
+      ></textarea>
+
+      <p id="event-error" role="alert"></p>
+
+      <footer class="dialog-actions">
+        <button
+          class="secondary-button"
+          type="button"
+          data-close-dialog="event-dialog"
+        >
+          Cancel
+        </button>
+
+        <button class="primary-button" type="submit">
+          Save event
+        </button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Add a flexible study task -->
+  <dialog id="task-dialog" aria-labelledby="task-dialog-title">
+    <form id="task-form">
+      <header class="dialog-header">
+        <h2 id="task-dialog-title">Add study task</h2>
+
+        <button
+          class="icon-button"
+          type="button"
+          data-close-dialog="task-dialog"
+          aria-label="Close task form"
+        >
+          ×
+        </button>
+      </header>
+
+      <label for="task-title">Task name</label>
+      <input
+        id="task-title"
+        type="text"
+        placeholder="e.g. Revise chapter 3"
+        maxlength="100"
+        required
+      >
+
+      <label for="task-duration">Time needed</label>
+      <select id="task-duration">
+        <option value="25">25 minutes</option>
+        <option value="30">30 minutes</option>
+        <option value="45">45 minutes</option>
+        <option value="60" selected>1 hour</option>
+        <option value="90">1 hour 30 minutes</option>
+        <option value="120">2 hours</option>
+      </select>
+
+      <label for="task-deadline">Deadline</label>
+      <input id="task-deadline" type="date" required>
+
+      <label for="task-priority">Priority</label>
+      <select id="task-priority">
+        <option value="high">High</option>
+        <option value="medium" selected>Medium</option>
+        <option value="low">Low</option>
+      </select>
+
+      <p id="task-error" role="alert"></p>
+
+      <footer class="dialog-actions">
+        <button
+          class="secondary-button"
+          type="button"
+          data-close-dialog="task-dialog"
+        >
+          Cancel
+        </button>
+
+        <button class="primary-button" type="submit">
+          Add task
+        </button>
+      </footer>
+    </form>
+  </dialog>
+</body>
+</html>
